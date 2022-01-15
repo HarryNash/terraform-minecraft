@@ -65,19 +65,21 @@ resource "aws_key_pair" "home" {
 }
 
 resource "aws_instance" "minecraft" {
-  ami                         = "ami-0b6b51e397faf2316"
-  instance_type               = "t2.medium"
+  ami                         = "ami-0fdbd8587b1cf431e"
+  instance_type               = "t2.small"
   vpc_security_group_ids      = [aws_security_group.minecraft.id]
   associate_public_ip_address = true
   key_name                    = aws_key_pair.home.key_name
   user_data                   = <<-EOF
     #!/bin/bash
     sudo yum -y update
-    sudo yum -y install java-1.8.0
+    sudo rpm --import https://yum.corretto.aws/corretto.key
+    sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo
+    sudo yum install -y java-17-amazon-corretto-devel.x86_64
     wget -O server.jar ${var.mojang_server_url}
-    java -Xmx3072M -Xms3072M -jar server.jar nogui
+    java -Xmx1024M -Xms1024M -jar server.jar nogui
     sed -i 's/eula=false/eula=true/' eula.txt
-    java -Xmx3072M -Xms3072M -jar server.jar nogui
+    java -Xmx1024M -Xms1024M -jar server.jar nogui
     EOF
   tags = {
     Name = "Minecraft"
