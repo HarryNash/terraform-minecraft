@@ -6,11 +6,13 @@
  \/   \___|_|  |_|  \__,_|_|  \___/|_|  |_| |_| |_| \/    \/_|_| |_|\___|\___|_|  \__,_|_|  \__|
 ```
 
+![preview](preview.gif)
+
 ## Setup
 - Generate an SSH key if you don't already have one with `ssh-keygen -t rsa -b 4096`.
-- [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (tested on 0.14.7).
+- [Install Terraform](https://learn.hashicorp.com/tutorials/terraform/install-cli) (tested on 1.1.3).
 - [Install the AWS CLI](https://docs.aws.amazon.com/cli/latest/userguide/install-cliv2.html).
-- [Configure the AWS CLI with an access key ID and secret access key](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-files.html).
+- [Configure the AWS CLI with an access key ID and secret access key](https://docs.aws.amazon.com/cli/latest/userguide/cli-configure-quickstart.html).
 
 ## Variables
 
@@ -24,7 +26,7 @@
 
 ### `mojang_server_url`
 - Copy the server download link from [here](https://www.minecraft.net/en-us/download/server/).
-- E.g. `https://launcher.mojang.com/v1/objects/1b557e7b033b583cd9f66746b7a9ab1ec1673ced/server.jar`.
+- E.g. `https://launcher.mojang.com/v1/objects/125e5adf40c659fd3bce3e66e67a16bb49ecc1b9/server.jar`.
 
 ### `your_public_key`
 - This will be in `~/.ssh/id_rsa.pub` by default.
