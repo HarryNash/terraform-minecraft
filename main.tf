@@ -7,26 +7,6 @@ terraform {
   }
 }
 
-variable "your_region" {
-  type        = string
-  description = "Where you want your server to be. The options are here https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html."
-}
-
-variable "your_ip" {
-  type        = string
-  description = "Only this IP will be able to administer the server. Find it here https://www.whatsmyip.org/."
-}
-
-variable "your_public_key" {
-  type        = string
-  description = "This will be in ~/.ssh/id_rsa.pub by default."
-}
-
-variable "mojang_server_url" {
-  type        = string
-  description = "Copy the server download link from here https://www.minecraft.net/en-us/download/server/."
-}
-
 provider "aws" {
   profile = "default"
   region  = var.your_region
@@ -38,13 +18,13 @@ resource "aws_security_group" "minecraft" {
     from_port   = 22
     to_port     = 22
     protocol    = "tcp"
-    cidr_blocks = ["${var.your_ip}/32"]
+    cidr_blocks = ["0.0.0.0/0"]
   }
   ingress {
     description = "Receive Minecraft from everywhere."
     from_port   = 25565
     to_port     = 25565
-    protocol    = "tcp"
+    protocol    = "tcp"  
     cidr_blocks = ["0.0.0.0/0"]
   }
   egress {
@@ -59,31 +39,53 @@ resource "aws_security_group" "minecraft" {
   }
 }
 
+/*
 resource "aws_key_pair" "home" {
   key_name   = "Home"
   public_key = var.your_public_key
 }
+*/
+
+resource "aws_key_pair" "minecraft-ec2" {
+  key_name   = "kp-ec2-minecraft"
+  public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFt70hApW6M8hFhI1A6sloQ6Zv1gByI7wXqB5tgTD3Ue"
+}
+
+data "aws_ami" "ubuntu" {
+  most_recent = true
+
+  filter {
+    name   = "name"
+    values = ["ubuntu/images/hvm-ssd/ubuntu-jammy-22.04-arm64-server-*"]
+  }
+
+  filter {
+    name   = "virtualization-type"
+    values = ["hvm"]
+  }
+
+  owners = ["099720109477"] # Canonical
+}
 
 resource "aws_instance" "minecraft" {
-  ami                         = "ami-0fdbd8587b1cf431e"
-  instance_type               = "t2.small"
+  ami                         = data.aws_ami.ubuntu.id
+  instance_type               = "c6g.medium"
   vpc_security_group_ids      = [aws_security_group.minecraft.id]
   associate_public_ip_address = true
-  key_name                    = aws_key_pair.home.key_name
+  key_name                    = aws_key_pair.minecraft-ec2.key_name
   user_data                   = <<-EOF
     #!/bin/bash
-    sudo yum -y update
-    sudo rpm --import https://yum.corretto.aws/corretto.key
-    sudo curl -L -o /etc/yum.repos.d/corretto.repo https://yum.corretto.aws/corretto.repo
-    sudo yum install -y java-17-amazon-corretto-devel.x86_64
-    wget -O server.jar ${var.mojang_server_url}
-    java -Xmx1024M -Xms1024M -jar server.jar nogui
-    sed -i 's/eula=false/eula=true/' eula.txt
-    java -Xmx1024M -Xms1024M -jar server.jar nogui
+    sudo apt update
+    sudo apt -y upgrade
     EOF
   tags = {
     Name = "Minecraft"
   }
+}
+
+resource "aws_eip_association" "eip_assoc_minecraft" {
+  allocation_id = "eipalloc-0e5c60af075b2f9ed"
+  instance_id = aws_instance.minecraft.id
 }
 
 output "instance_ip_addr" {
