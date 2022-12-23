@@ -40,10 +40,10 @@ resource "aws_security_group" "minecraft" {
   }
 }
 
-// Create policy to read from S3
-resource "aws_iam_policy" "read-s3-policy" {
-  name        = "s3-Bucket-Read-Access-Policy"
-  description = "Provides permission to read S3"
+// Create policy to read and write S3
+resource "aws_iam_policy" "s3-policy" {
+  name        = "s3-Bucket-Access-Policy"
+  description = "Provides permission to read and write S3"
 
   policy = jsonencode({
     Version = "2012-10-17"
@@ -51,7 +51,8 @@ resource "aws_iam_policy" "read-s3-policy" {
       {
         Action = [
           "s3:GetObject",
-          "s3:ListBucket"
+          "s3:ListBucket",
+          "s3:PutObject"
         ]
         Effect   = "Allow"
         Resource = [
@@ -84,7 +85,7 @@ resource "aws_iam_role" "s3-read-role" {
 resource "aws_iam_policy_attachment" "minecraft-role-attachment" {
   name       = "minecraft-role-attachment"
   roles      = [aws_iam_role.s3-read-role.name]
-  policy_arn = aws_iam_policy.read-s3-policy.arn
+  policy_arn = aws_iam_policy.s3-policy.arn
 }
 
 // Need to create instance profile
@@ -149,8 +150,14 @@ resource "aws_instance" "minecraft" {
     sudo add-apt-repository -y 'deb https://apt.corretto.aws stable main'
     sudo apt-get install -y java-17-amazon-corretto-jdk    
     apt-get install -y awscli
-    mkdir minecraft
-    aws s3 sync s3://086133709882-minecraft-server-1 minecraft
+    aws configure list
+    sudo mkdir -p /opt/minecraft/server
+    sudo chown ubuntu:ubuntu /opt/minecraft/server
+    cd /opt/minecraft/server
+    aws s3 sync s3://086133709882-minecraft-server-1 .
+    sudo chown -R ubuntu:ubuntu /opt/minecraft/server
+    sudo chmod +x server.sh
+    ./server.sh
     EOF
   tags = {
     Name        = "minecraft"
