@@ -144,43 +144,34 @@ resource "aws_instance" "minecraft" {
   key_name                    = aws_key_pair.minecraft-ec2.key_name
   user_data                   = <<-EOF
     #!/bin/bash
+
     sudo apt update
     sudo apt -y upgrade
+
     wget -O- https://apt.corretto.aws/corretto.key | sudo apt-key add - 
     sudo add-apt-repository -y 'deb https://apt.corretto.aws stable main'
     sudo apt-get install -y java-17-amazon-corretto-jdk    
+
     apt-get install -y awscli
     aws configure list
 
-    echo '#!/bin/bash
-      echo "Performing backup"
-      # Backup
-
-      cd /opt/minecraft/backups
-
-      # Delete file older than 30 days
-      find ./*.tar.gz -mtime +30 -exec rm {} \;
-
-      cd /opt/minecraft/server
-      NOW=$(date +"%Y-%m-%d")
-      tar -cpvzf /opt/minecraft/backups/minecraft-$NOW.tar.gz world world_nether world_the_end
-
-      aws s3 cp /opt/minecraft/backups/minecraft-$NOW.tar.gz s3://086133709882-minecraft-backup-1/minecraft-$NOW.tar.gz
-
-      # Done
-      echo "Backup complete."' > backup.sh
+    curl https://raw.githubusercontent.com/dylanclement/terraform-minecraft/main/backup.sh > backup.sh
 
     cat <(crontab -l) <(echo "10 2 * * * /usr/bin/bash /home/ubuntu/backup.sh") | crontab -
 
     sudo mkdir -p /opt/minecraft/server
     sudo chown ubuntu:ubuntu /opt/minecraft/server
     cd /opt/minecraft/server
+
+    aws s3 sync s3://086133709882-minecraft-server-1 .
     FILE=`aws s3api list-objects-v2 --bucket "086133709882-minecraft-backup-1" --query 'reverse(sort_by(Contents[?contains(Key, \`gz\`)], &LastModified))[:1].Key' --output=text`
     aws s3 cp "s3://086133709882-minecraft-backup-1/$FILE" .
     tar -xf $FILE
+
     sudo chown -R ubuntu:ubuntu /opt/minecraft/server
     sudo chmod +x server.sh
-    /usr/bin/tmux new -s minecraft-server -d "/bin/bash server.sh"
+
+    /usr/bin/tmux new -s minecraft-server -d "/bin/bash server.sh"    
     EOF
   tags = {
     Name        = "minecraft"

@@ -7,8 +7,9 @@ cd /opt/minecraft/backups
 # Delete file older than 30 days
 find ./*.tar.gz -mtime +30 -exec rm {} \;
 
+cd /opt/minecraft/server
 NOW=$(date +"%Y-%m-%d")
-tar -cpvzf /opt/minecraft/backups/minecraft-$NOW.tar.gz /opt/minecraft/server/world /opt/minecraft/server/world_nether /opt/minecraft/server/world_the_end
+tar -cpvzf /opt/minecraft/backups/minecraft-$NOW.tar.gz world world_nether world_the_end
 
 aws s3 cp /opt/minecraft/backups/minecraft-$NOW.tar.gz s3://086133709882-minecraft-backup-1/minecraft-$NOW.tar.gz
 
