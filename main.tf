@@ -155,12 +155,15 @@ resource "aws_instance" "minecraft" {
     apt-get install -y awscli
     aws configure list
 
+    cd .
     curl https://raw.githubusercontent.com/dylanclement/terraform-minecraft/main/backup.sh > backup.sh
+    sudo chmod +x backup.sh
 
     cat <(crontab -l) <(echo "10 2 * * * /usr/bin/bash /home/ubuntu/backup.sh") | crontab -
 
     sudo mkdir -p /opt/minecraft/server
-    sudo chown ubuntu:ubuntu /opt/minecraft/server
+    sudo mkdir -p /opt/minecraft/backups
+    sudo chown -R ubuntu:ubuntu /opt/minecraft
     cd /opt/minecraft/server
 
     aws s3 sync s3://086133709882-minecraft-server-1 .
