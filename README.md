@@ -20,4 +20,13 @@
 - Wait a minute for the server to spin up.
 - Connect to http://squirbicous.com
 - Play Minecraft
-- Irrecoverably shut everything down with `terraform destroy`.
+
+# To connect
+- `ssh -i "C:\Users\dylan\.ssh\kp-ec2-minecraft.pem" ubuntu@squirbicous.com`
+- Once connected `sudo tmux attach-session -t minecraft-server`
+
+# To Update
+- Run `terraform apply` which should pick up any changes (terminate EC2 in console if hung).
+
+# To irrecoverably shut everything down
+- Run `terraform destroy` (will delete all infra).
