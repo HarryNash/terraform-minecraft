@@ -117,7 +117,7 @@ data "aws_ami" "ubuntu" {
 
 resource "aws_instance" "minecraft" {
   ami                         = data.aws_ami.ubuntu.id
-  instance_type               = "c6g.medium"
+  instance_type               = "c7g.medium"
   iam_instance_profile        = aws_iam_instance_profile.minecraft-role-profile.name
   vpc_security_group_ids      = [aws_security_group.minecraft.id]
   associate_public_ip_address = true
