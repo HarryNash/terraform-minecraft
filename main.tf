@@ -12,7 +12,14 @@ provider "aws" {
   region  = var.region
 }
 
+resource "aws_default_vpc" "default" {
+  tags = {
+    Name = "Default VPC"
+  }
+}
+
 resource "aws_security_group" "minecraft" {
+  vpc_id        = aws_default_vpc.default.id
   ingress {
     description = "Receive SSH from home."
     from_port   = 22
@@ -162,9 +169,25 @@ resource "aws_instance" "minecraft" {
   }
 }
 
+resource "aws_eip" "elastic_ip" {
+  instance = aws_instance.minecraft.id
+  vpc      = true
+  tags = {
+    Name = "minecraft-eip"
+  }
+}
+
 resource "aws_eip_association" "eip_assoc_minecraft" {
-  allocation_id = "eipalloc-0e5c60af075b2f9ed"
+  allocation_id = aws_eip.elastic_ip.allocation_id
   instance_id = aws_instance.minecraft.id
+}
+
+resource "aws_route53_record" "www" {
+  zone_id = "Z1N4R7JH0CW2W6" // Squirbicous.com
+  name    = "squirbicous.com"
+  type    = "A"
+  ttl     = 300
+  records = [aws_eip.elastic_ip.public_ip]
 }
 
 output "instance_ip_addr" {
