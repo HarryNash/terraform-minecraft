@@ -94,26 +94,6 @@ resource "aws_iam_instance_profile" "minecraft-role-profile" {
   role = aws_iam_role.s3-read-role.name
 }
 
-/*
-resource "aws_s3_bucket" "minecraft-backups" {
-  bucket = "${var.bucket_name}" 
-  tags = {
-    Name        = "minecraft"
-    Environment = "dev"
-  }
-}
-
-resource "aws_s3_bucket_acl" "my_protected_bucket_acl" {
-  bucket = aws_s3_bucket.minecraft-backups.id
-  acl    = "private"
-}
-
-resource "aws_key_pair" "home" {
-  key_name   = "Home"
-  public_key = var.your_public_key
-}
-*/
-
 resource "aws_key_pair" "minecraft-ec2" {
   key_name   = "kp-ec2-minecraft"
   public_key = "ssh-ed25519 AAAAC3NzaC1lZDI1NTE5AAAAIFt70hApW6M8hFhI1A6sloQ6Zv1gByI7wXqB5tgTD3Ue"
@@ -156,14 +136,14 @@ resource "aws_instance" "minecraft" {
     aws configure list
 
     cd .
-    curl https://raw.githubusercontent.com/dylanclement/terraform-minecraft/main/backup.sh > backup.sh
+    curl https://raw.githubusercontent.com/dylanclement/terraform-minecraft/main/backup.sh > /home/ubuntu/backup.sh
+    sudo chown ubuntu:ubuntu /home/ubuntu/backup.sh
     sudo chmod +x backup.sh
 
-    cat <(crontab -l) <(echo "10 2 * * * /usr/bin/bash /home/ubuntu/backup.sh") | crontab -
+    cat <(sudo crontab -u ubuntu -l) <(echo "2 2 * * * /bin/bash /home/ubuntu/backup.sh) | sudo crontab -u ubuntu -
 
     sudo mkdir -p /opt/minecraft/server
     sudo mkdir -p /opt/minecraft/backups
-    sudo chown -R ubuntu:ubuntu /opt/minecraft
     cd /opt/minecraft/server
 
     aws s3 sync s3://086133709882-minecraft-server-1 .
@@ -171,10 +151,10 @@ resource "aws_instance" "minecraft" {
     aws s3 cp "s3://086133709882-minecraft-backup-1/$FILE" .
     tar -xf $FILE
 
-    sudo chown -R ubuntu:ubuntu /opt/minecraft/server
+    sudo chown -R ubuntu:ubuntu /opt/minecraft
     sudo chmod +x server.sh
 
-    /usr/bin/tmux new -s minecraft-server -d "/bin/bash server.sh"    
+    sudo -u ubuntu /usr/bin/tmux new -s minecraft-server -d "/bin/bash server.sh"
     EOF
   tags = {
     Name        = "minecraft"

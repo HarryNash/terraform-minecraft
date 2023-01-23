@@ -23,7 +23,7 @@
 
 # To connect
 - `ssh -i "C:\Users\dylan\.ssh\kp-ec2-minecraft.pem" ubuntu@squirbicous.com`
-- Once connected `sudo tmux attach-session -t minecraft-server`
+- Once connected `tmux attach-session -t minecraft-server`
 
 # To Update
 - Run `terraform apply` which should pick up any changes (terminate EC2 in console if hung).
