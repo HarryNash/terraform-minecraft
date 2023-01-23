@@ -140,7 +140,7 @@ resource "aws_instance" "minecraft" {
     sudo chown ubuntu:ubuntu /home/ubuntu/backup.sh
     sudo chmod +x backup.sh
 
-    cat <(sudo crontab -u ubuntu -l) <(echo "2 2 * * * /bin/bash /home/ubuntu/backup.sh) | sudo crontab -u ubuntu -
+    cat <(sudo crontab -u ubuntu -l) <(echo "2 2 * * * /bin/bash /home/ubuntu/backup.sh") | sudo crontab -u ubuntu -
 
     sudo mkdir -p /opt/minecraft/server
     sudo mkdir -p /opt/minecraft/backups
