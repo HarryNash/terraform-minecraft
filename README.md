@@ -7,7 +7,7 @@
 ```
 
 ## Description
-Instead of spending hours following [the official guide](https://help.minecraft.net/hc/en-us/articles/360058525452-How-to-Setup-a-Minecraft-Java-Edition-Server) on how to set up a Minecraft server, you can instead run this script to do it for you in a couple of seconds.
+Rather than spending hours following [the official guide](https://help.minecraft.net/hc/en-us/articles/360058525452-How-to-Setup-a-Minecraft-Java-Edition-Server) on how to set up a Minecraft server, you can run this simple script instead.
 
 ![preview](preview.gif)
 
