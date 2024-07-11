@@ -35,6 +35,10 @@ Rather than spending hours following [the official guide](https://help.minecraft
 - This will be in `~/.ssh/id_rsa.pub` by default.
 - E.g. `ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQC5dzid+ZR1TGRmnWVbCnD5FAJG20bAGD0WvWrvqabWIZOwARZD9P7P0uArCWBAcdNusyv9RN9/wErT+P3kouJdPzqMoF1qJ08EgDq4qyRRgSG3SZIToNjndmxrRTJF09ybnT+AGMXonmZXk8I5Gx1x3OvM0GvdY9ZJNqGrOBAQDg7CBnY7TMpYNwQ5Brk17GGwGnuBDGJQzQKJ3lbk60GzGC6g6l/iBW7A8eUQhaZnKOnxj6d9TDk/2X1GOiPp3duNLtQKKqw6uDhglPk91lmnGr97pT9/Z+tSUrH+RVbVKdDbPDqMT28xIlZ0x5YR43Ypocvi065Z45yPsTUYcbq4I2ES0v56MU+ZmNuBYYvdHgaiPfF62ddoCkbs00YwjaGL8Nt8rAuOzGDGjnRWAbAcIF2DbE+K8a+lczkK7Ruzg2jXkjGOVvJIP/k9HFfWvybsmcU9thMDXkPBrjyB+Xxqzu/jn+DAjgBjIJS31RcD0noSGer60XwN21HdmUy+R6lSf3PAgFFX7y1NE3mKaattxJ8Eg/0vRf4AJJUTdlEqQlzjNqr0CWnwjcui/8Dt9DBlDjMeWB8kWngLu+y8TLFWkDdBjXsxgAcST630qw5aI2nYCQPEYBjBNJRiHdOJcxelHa8Tb9rSeYg+6eSE9bUBzhN7rKdIUwmAsSeOLcCFnw== alex@gmail.com`.
 
+### `your_ami`
+- Your instance AMI (different for every region). Use the default Amazon Linux one for your region. Find this https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html
+- E.g. `ami-048e6f7223041530b`
+
 ## Steps
 - Run `terraform init`.
 - Run `terraform apply`.
