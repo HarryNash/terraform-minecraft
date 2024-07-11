@@ -12,6 +12,11 @@ variable "your_region" {
   description = "Where you want your server to be. The options are here https://docs.aws.amazon.com/AmazonRDS/latest/UserGuide/Concepts.RegionsAndAvailabilityZones.html."
 }
 
+variable "your_ami" {
+  type        = string
+  description = "Insert AMI for your instance. Please refer to default Amazon Linux AMIs for every region. Find your AMI here https://docs.aws.amazon.com/AWSEC2/latest/UserGuide/finding-an-ami.html"
+}
+
 variable "your_ip" {
   type        = string
   description = "Only this IP will be able to administer the server. Find it here https://www.whatsmyip.org/."
@@ -65,7 +70,7 @@ resource "aws_key_pair" "home" {
 }
 
 resource "aws_instance" "minecraft" {
-  ami                         = "ami-048e6f7223041530b"
+  ami                         = var.your_ami
   instance_type               = "t3.small"
   vpc_security_group_ids      = [aws_security_group.minecraft.id]
   associate_public_ip_address = true
